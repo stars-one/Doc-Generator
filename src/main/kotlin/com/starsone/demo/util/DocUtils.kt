@@ -27,14 +27,14 @@ import java.io.OutputStreamWriter
 class DocUtils {
     companion object {
 
-        fun outputHtmlFile(dataDoc: DocCatalogue) {
+        fun outputHtmlFile(dataDoc: DocCatalogue,templatesDir:File) {
             // step1 创建freeMarker配置实例
             val configuration = Configuration()
             // step2 获取模版路径
-            configuration.setDirectoryForTemplateLoading(File("Q:\\JavaWebProject\\DocumentGenerator\\src\\main\\resources\\templates"))
+            configuration.setDirectoryForTemplateLoading(templatesDir)
 
             // step3 数据模型
-            dealMdFiles(dataDoc.partDataList)
+            dealMdFiles(dataDoc.partDataList,configuration)
             //处理索引
             var sum = 0
             dataDoc.partDataList.forEachIndexed { index, partData ->
@@ -53,17 +53,13 @@ class DocUtils {
             template.process(dataDoc, out, ObjectWrapper.BEANS_WRAPPER)
         }
 
-        private fun dealMdFiles(partDataList: List<PartData>) {
+        private fun dealMdFiles(partDataList: List<PartData>, configuration: Configuration) {
             partDataList.forEachIndexed { index, partData ->
                 val partPath = "part" + index + 1
                 File("doc/$partPath").mkdirs()
                 for (chapterData in partData.chapterDataList) {
                     val htmlFile = md2Html(chapterData.filePath)
                     //需要复制文件到指定路径
-                    // step1 创建freeMarker配置实例
-                    val configuration = Configuration()
-                    // step2 获取模版路径
-                    configuration.setDirectoryForTemplateLoading(File("Q:\\JavaWebProject\\DocumentGenerator\\src\\main\\resources\\templates"))
                     val content = htmlFile.readText()
 
                     val contentHtmlFile = File("doc/$partPath/${htmlFile.name}")

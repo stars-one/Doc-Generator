@@ -39,10 +39,18 @@
                         class="mdui-icon material-icons">menu</i></span>
         <a href="./" class="mdui-typo-title">${title}</a>
         <div class="mdui-toolbar-spacer"></div>
-        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
-              mdui-dialog="{target: '#dialog-docs-theme'}"
-              mdui-tooltip="{content: '设置主题'}"><i
-                class="mdui-icon material-icons">color_lens</i></span>
+        <#--Gitee-->
+        <#if giteeUrl!="">
+        <a href="${giteeUrl}" target="_blank" class="mdui-ripple mdui-ripple-white mdui-valign" mdui-tooltip="{content: '查看 Gitee'}">
+            <img width="24px" height="24px" src="img/gitee.png" />
+        </a>
+        </#if>
+        <#--Github-->
+        <#if githubUrl!="">
+        <a href="${githubUrl}" target="_blank" class="mdui-ripple mdui-ripple-white mdui-valign" mdui-tooltip="{content: '查看 Github'}">
+            <img width="24px" height="24px" src="img/github.png" />
+        </a>
+        </#if>
     </div>
 </header>
 
@@ -74,7 +82,7 @@
             style="border: medium none;width: 100%;height: 100%;"></iframe>
 </div>
 <div class="doc-footer-nav-text">
-    <p class="mdui-text-center"><strong>本篇文档由<a target="_blank" href="https://www.github.com/stars-one/">文档生成器</a></strong>生成</p>
+    <p class="mdui-text-center"><strong>本篇文档由<a target="_blank" href="https://github.com/Stars-One/Doc-Generator">文档生成器</a></strong>生成</p>
 </div>
 </body>
 </html>

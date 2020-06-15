@@ -45,9 +45,11 @@ class MainView : BaseView() {
                     //获得数据源
                     val list = fxRecyclerView.adapter?.itemViewList?.map { it.getPartData() }
                     if (list != null) {
-                        val docData = DocCatalogue(myDataModel.docTile.value, list)
+                        val docData = DocCatalogue(myDataModel.docTile.value, list,myDataModel.githubUrl.value,myDataModel.giteeUrl.value)
                         //解析md文件生成hhtml文件并将html文件放在指定路径
-                        DocUtils.outputHtmlFile(docData)
+                        val url = resources.url("/templates")
+                        val templatesDir = File(url.toURI())
+                        DocUtils.outputHtmlFile(docData,templatesDir)
                     }
                 }
             }
@@ -80,19 +82,25 @@ class MainView : BaseView() {
         fxRecyclerView.adapter = adapter
 
         jfxtextfield(myDataModel.docTile, "文档标题")
+        jfxtextfield(myDataModel.giteeUrl, "Gitee项目地址")
+        jfxtextfield(myDataModel.githubUrl, "Github项目地址")
+
         this += fxRecyclerView
+
     }
 }
 
 class MyViewModel : ViewModel() {
     val docTile = bind { SimpleStringProperty() }
+    val giteeUrl = bind { SimpleStringProperty() }
+    val githubUrl = bind { SimpleStringProperty() }
     val partDataList = bind { SimpleListProperty<PartData>(observableList()) }
 }
 
 /*
 整篇文档的标题
  */
-class DocCatalogue(val title: String, val partDataList: List<PartData>)
+class DocCatalogue(val title: String, val partDataList: List<PartData>,var githubUrl:String="",var giteeUrl:String="")
 
 /*
 每一部分的标题及其下面的各章节列表

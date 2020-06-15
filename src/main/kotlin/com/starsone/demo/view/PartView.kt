@@ -19,12 +19,14 @@ class PartView : View("My View") {
 
     val chapterDataList = arrayListOf<ChapterData>()
 
+    lateinit var adapter:RVAdapter<ChapterData,ChapterView>
+
     override val root = vbox(10) {
 
         titleTf = jfxtextfield("", "大章节标题")
         val fxRecyclerView = FxRecyclerView<ChapterData,ChapterView>()
 
-        val adapter = object: RVAdapter<ChapterData,ChapterView>(chapterDataList){
+        adapter = object: RVAdapter<ChapterData,ChapterView>(chapterDataList){
             override fun onCreateView(): ChapterView {
                 return ChapterView()
             }
@@ -64,7 +66,12 @@ class PartView : View("My View") {
     }
 
     fun getPartData(): PartData {
-        return PartData(titleTf.text,chapterDataList)
+        val chapterList = arrayListOf<ChapterData>()
+        for (chapterView in adapter.itemViewList) {
+            val genereateChapterData = chapterView.genereateChapterData()
+            chapterList.add(genereateChapterData)
+        }
+        return PartData(titleTf.text,chapterList)
     }
 }
 

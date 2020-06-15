@@ -32,6 +32,7 @@ class ChapterView : View("My View") {
     }
 
     fun genereateChapterData(): ChapterData {
+        println(titleTf.text)
         return ChapterData(titleTf.text,filePathTf.text)
     }
 }

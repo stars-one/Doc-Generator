@@ -10,6 +10,7 @@ class TestView : BaseView() {
 
     override var root = vbox {
         setPrefSize(500.0,300.0)
+
         textfield(dataModel.username)
         textfield(dataModel.password)
         button{
