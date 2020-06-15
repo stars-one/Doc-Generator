@@ -33,11 +33,11 @@ class PartView : View("My View") {
 
             override fun onBindData(itemView: ChapterView, bean: ChapterData, position: Int) {
                 itemView.setChapterData(bean)
-                itemView.deleteBtn.setOnAction {
+                /*itemView.deleteBtn.setOnAction {
                     println("这是$position")
                     val genereateChapterData = itemView.genereateChapterData()
                     println("${genereateChapterData.title}+${genereateChapterData.filePath}")
-                }
+                }*/
             }
 
             override fun onClick(itemView: ChapterView, position: Int) {
@@ -49,6 +49,9 @@ class PartView : View("My View") {
         fxRecyclerView.adapter =adapter
 
         jfxbutton("批量选择md文件"){
+            isFocusTraversable = false
+            setOnMouseEntered { style { backgroundColor += c(0, 0, 0, 0.1) } }
+            setOnMouseExited { style {} }
             action{
                 val files = chooseFile("批量选择md文件", arrayOf(FileChooser.ExtensionFilter("md文件","*.md")),FileChooserMode.Multi)
                 val list =arrayListOf<ChapterData>()
@@ -62,6 +65,7 @@ class PartView : View("My View") {
                 chapterDataList.addAll(list)
             }
         }
+        fxRecyclerView.setWidth(600.0)
         this+=fxRecyclerView
     }
 
