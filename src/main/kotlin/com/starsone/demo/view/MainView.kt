@@ -55,10 +55,8 @@ class MainView : BaseView() {
                     val list = fxRecyclerView.adapter?.itemViewList?.map { it.getPartData() }
                     if (list != null) {
                         val docData = DocCatalogue(myDataModel.docTile.value, list, myDataModel.githubUrl.value, myDataModel.giteeUrl.value)
-                        //解析md文件生成hhtml文件并将html文件放在指定路径
-                        val url = resources.url("/templates")
-                        val templatesDir = File(url.toURI())
-                        DocUtils.outputHtmlFile(docData, templatesDir)
+                        //解析md文件,生成index.html文件
+                        DocUtils.outputHtmlFile(docData)
                         //成功提示
                         DialogBuilder(currentStage, Modality.APPLICATION_MODAL)
                                 .setTitle("提示")

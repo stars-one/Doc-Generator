@@ -27,11 +27,11 @@ import java.io.OutputStreamWriter
 class DocUtils {
     companion object {
 
-        fun outputHtmlFile(dataDoc: DocCatalogue,templatesDir:File) {
+        fun outputHtmlFile(dataDoc: DocCatalogue) {
             // step1 创建freeMarker配置实例
             val configuration = Configuration()
             // step2 获取模版路径
-            configuration.setDirectoryForTemplateLoading(templatesDir)
+            configuration.setClassForTemplateLoading(this.javaClass,"/templates")
 
             // step3 数据模型
             dealMdFiles(dataDoc.partDataList,configuration)
@@ -55,7 +55,7 @@ class DocUtils {
 
         private fun dealMdFiles(partDataList: List<PartData>, configuration: Configuration) {
             partDataList.forEachIndexed { index, partData ->
-                val partPath = "part" + index + 1
+                val partPath = "part" + (index + 1)
                 File("doc/$partPath").mkdirs()
                 for (chapterData in partData.chapterDataList) {
                     val htmlFile = md2Html(chapterData.filePath)
