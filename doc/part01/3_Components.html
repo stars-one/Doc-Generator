@@ -1,0 +1,496 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+    <meta content="text/html; charset=utf-8">
+    <script src="../js/vue.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/mdui.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="../css/mdui.css">
+    <link rel="stylesheet" href="../css/dracula.css">
+    <script src="../js/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+    <style>
+        .mdui-typo pre {
+            display: block;
+            overflow-x: auto;
+            padding: 0.5em;
+            background: #282a36;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="mdui-typo mdui-container mdui-theme-primary-blue">
+    <h1 class="mdui-text-color-theme">Components</h1>
+<p>JavaFX uses a theatrical analogy to organize an <code>Application</code> with <code>Stage</code> and <code>Scene</code> components.</p>
+<p>TornadoFX builds on this by providing <code>View</code>, <code>Controller</code>, and <code>Fragment</code> components. While the <code>Stage</code>, and <code>Scene</code> are used by
+TornadoFX, the <code>View</code>, <code>Controller</code>, and <code>Fragment</code> introduces new concepts that streamline development. Many of these components are automatically maintained as singletons, and can communicate to each other through TornadoFX's simple dependency injections or direct instantiation.</p>
+<p>You also have the option to utilize FXML which will be discussed in Chapter 10. But first, lets extend <code>App</code> to create an entry point that launches a TornadoFX application.</p>
+<h2 class="mdui-text-color-theme">App and View Basics</h2>
+<p>To create a TornadoFX application, you must have at least one class that extends <code>App</code>. An <strong>App</strong> is the entry point to the application and specifies
+the initial <code>View</code>. It does in fact extend JavaFX <code>Application</code>, but you do not necessarily need to specify a <code>start()</code> or <code>main()</code> method.</p>
+<p>Extend <code>App</code> to create your own implementation and specify the primary view as the first constructor argument.</p>
+<pre><code class="language-kotlin">import tornadofx.*
+
+class MyApp: App(MyView::class)
+</code></pre>
+<p>A <strong>View</strong> contains display logic as well as a layout of Nodes, similar to the JavaFX <code>Stage</code>. It is automatically managed as a singleton. When you
+declare a <code>View</code> you must specify a <code>root</code> property which can be any <code>Parent</code> type, and that will hold the View's content.</p>
+<p>In the same Kotlin file or in a new file, extend a class off of <code>View</code>. Override the abstract <code>root</code> property and assign it <code>VBox</code> or any other <code>Node</code>
+you choose.</p>
+<pre><code class="language-kotlin">import tornadofx.*
+
+class MyView: View() {
+    override val root = vbox {
+    }
+}
+</code></pre>
+<p>However, to actually show something on screen we want to populate this <code>VBox</code> acting as the <code>root</code> control. Using the <a href="https://kotlinlang.org/docs/reference/classes.html#constructors" target="_blank">initializer block</a>, let's add a JavaFX <code>Button</code> and a <code>Label</code>.</p>
+<p>Also take note of the <code>tornadofx.*</code> import. This is important and should be present in all your TornadoFX related files. The reason this is important is that some of the functionality of the
+framework isn't discoverable by the IDE without the import. This import enabled some advanced extension functions that you really don't want to live without :)</p>
+<pre><code class="language-kotlin">import tornadofx.*
+
+class MyView: View() {
+    override val root = vbox {
+        button(&quot;Press me&quot;)
+        label(&quot;Waiting&quot;)
+    }
+}
+</code></pre>
+<p>TornadoFX provides a builder syntax that will streamline your UI code. Instead of creating UI elements and manually adding them to the parent element's children list, the builders
+allow us to express the UI as a hierarchical structure which enables you to visualize the resulting UI very easily. Note that all builders are written in lowercase, so as to not
+confuse them with manual instantiation of the UI element classes.</p>
+<h2 class="mdui-text-color-theme">Starting a TornadoFX Application</h2>
+<p>Newer versions of the JVM know how to start JavaFX applications without a <code>main()</code> method. A JavaFX application, and by extension a TornadoFX application, is any class that extends <code>javafx.application.Application</code>. Since <code>tornadofx.App</code> extends <code>javafx.application.Application</code>, TornadoFX apps are no different. Therefore you would start the app by referencing <code>com.example.app.MyApp</code>, and you do not necessarily need a <code>main()</code> function (unless you need to supply command line arguments). In that case you would add a package level main function to the <code>MyApp.kt</code> file:</p>
+<pre><code class="language-kotlin">fun main(args: Array&lt;String&gt;) {
+  launch&lt;MyApp&gt;(args)
+}
+</code></pre>
+<p>This main function would be compiled to <code>com.example.app.MyAppKt</code>. Notice the <code>Kt</code> at the end. When you create a packagelevel main function, it will always have a class name of the fully qualified package, plus the file name, appended with <code>Kt</code>.</p>
+<p>For launching and testing the <code>App</code>, we will use Intellij IDEA. Navigate to <em>Run</em>→<em>Edit Configurations</em> (Figure 3.1).</p>
+<p><strong>Figure 3.1</strong></p>
+<p><img src="https://i.imgur.com/msTSPNm.png" alt="" /></p>
+<p>Click the green &quot;+&quot; sign and create a new Application configuration (Figure 3.2).</p>
+<p><strong>Figure 3.2</strong></p>
+<p><img src="https://i.imgur.com/OeejuvB.png" alt="" /></p>
+<p>Specify the name of your &quot;Main class&quot; which should be your <code>App</code> class. You will also need to specify the module it resides in. Give the configuration a meaningful name such as &quot;Launcher&quot;. After that click &quot;OK&quot; (Figure 3.3).</p>
+<p><strong>Figure 3.3</strong></p>
+<p><img src="https://i.imgur.com/0QayTdJ.png" alt="" /></p>
+<p>You can run your TornadoFX application by selecting <em>Run</em>→<em>Run 'Launcher'</em> or whatever you named the configuration (Figure 3.4).</p>
+<p><strong>Figure 3.4</strong></p>
+<p><img src="https://i.imgur.com/9HvQpTe.png" alt="" /></p>
+<p>You should now see your application launch (Figure 3.5)</p>
+<p><strong>Figure 3.5</strong></p>
+<p><img src="https://i.imgur.com/agTMNS3.png" alt="" /></p>
+<p>Congratulations! You have written your first (albeit simple) TornadoFX application. It may not look like much right now, but as we cover more of TornadoFX's powerful features we will be creating large, impressive user interfaces with little code in no time. But first let's understand a little better what is happening between <code>App</code> and <code>View</code>.</p>
+<h2 class="mdui-text-color-theme">Understanding Views</h2>
+<p>Let's dive a little deeper into how a <code>View</code> works and how it can be invoked. A <code>View</code> contains a hierarchy of JavaFX Nodes, starting from the root.
+In the next section we will learn how to leverage the builders to create these <code>Node</code> hierarchies quickly. There is only one instance of <code>MyView</code> maintained by TornadoFX,
+effectively making it a singleton. TornadoFX also supports scopes, which can group together a collection of <code>View</code>s, <code>Fragment</code>s and <code>Controller</code>s in separate instances,
+resulting in a <code>View</code> only being a singleton inside that scope. This is great for <a href="https://msdn.microsoft.com/en-us/library/aa263481.aspx" target="_blank">Multiple-Document Interface applications</a>
+and other advanced use cases.</p>
+<h2 class="mdui-text-color-theme">Embedding Views</h2>
+<p>You can also inject one or more Views into another <code>View</code>. Below we embed a <code>TopView</code> and <code>BottomView</code> into a <code>MasterView</code>. We assign these sub views to sections inside the <code>BorderPane</code> (Figure 3.6).</p>
+<pre><code class="language-kotlin">import javafx.scene.control.Label
+import javafx.scene.layout.BorderPane
+import tornadofx.*
+
+
+class MasterView: View() {
+    override val root = borderpane {
+        top&lt;TopView&gt;()
+        bottom&lt;BottomView&gt;()
+    }
+}
+
+class TopView: View() {
+    override val root = label(&quot;Top View&quot;)
+}
+
+class BottomView: View() {
+    override val root = label(&quot;Bottom View&quot;)
+}
+
+</code></pre>
+<h2 class="mdui-text-color-theme">Injection Using find() or inject()</h2>
+<p>The <code>inject()</code> delegate will lazily assign a given component to a property. The first time that component is called is when it will be retrieved.
+Alternatively, instead of using the <code>inject()</code> delegate you can use the <code>find()</code> function to retrieve a singleton instance of a <code>View</code> or other components. In the following example
+we retrieve an instance of the <code>TopView</code> and <code>BottomView</code> using <code>inject()</code> and <code>find()</code> respectively, and assign the root element of those sub views to the sections inside the <code>BorderPane</code>.
+This is normally not necessary but might help you understand how the above short hand works under the covers.</p>
+<pre><code class="language-kotlin">import javafx.scene.control.Label
+import javafx.scene.layout.BorderPane
+import tornadofx.*
+
+
+class MasterView : View() {
+    // Explicitly retrieve TopView
+    val topView = find(TopView::class)
+    // Create a lazy reference to BottomView
+    val bottomView: BottomView by inject()
+
+    override val root = borderpane {
+        top = topView.root
+        bottom = bottomView.root
+    }
+}
+</code></pre>
+<p>You can use either <code>find()</code> or <code>inject()</code>, but using <code>inject()</code> delegates is the most idiomatic means to perform dependency injection and has the advantage of lazy loading.</p>
+<h2 class="mdui-text-color-theme">Controllers</h2>
+<p>In many cases, it is considered a good practice to separate a UI into three distinct parts:</p>
+<ol>
+<li><strong>Model</strong> - The business code layer that holds core logic and data</li>
+<li><strong>View</strong> - The visual display with various input and output controls</li>
+<li><strong>Controller</strong> - The &quot;middleman&quot; mediating events between the Model and the View</li>
+</ol>
+<blockquote>
+<p>There are other flavors of MVC like MVVM and MVP, all of which can be leveraged in TornadoFX.</p>
+</blockquote>
+<p>While you could put all logic from the Model and Controller right into the view, it is often cleaner to separate these three pieces distinctly to maximize reusability. One commonly used pattern to accomplish this is the MVC pattern. In TornadoFX, a <code>Controller</code> can be injected to support a <code>View</code>.</p>
+<p>Here is a simple example. Create a simple <code>View</code> with a <code>TextField</code> whose value is bound to an observable string property and later written to a &quot;database&quot; when a <code>Button</code> is clicked. We can inject a <code>Controller</code> that handles interacting with the model that writes to the database. Since this example is simplified, there will be no database but a printed message will serve as a placeholder (Figure 3.7).</p>
+<pre><code class="language-kotlin">import tornadofx.*
+
+
+class MyView : View() {
+    val controller: MyController by inject()
+    val input = SimpleStringProperty()
+
+    override val root = form {
+        fieldset {
+            field(&quot;Input&quot;) {
+                textfield(input)
+            }
+
+            button(&quot;Commit&quot;) {
+                action {
+                    controller.writeToDb(input.value)
+                    input.value = &quot;&quot;
+                }
+            }
+       }
+    }
+}
+
+
+class MyController: Controller() {
+    fun writeToDb(inputValue: String) {
+        println(&quot;Writing $inputValue to database!&quot;)
+    }
+}
+</code></pre>
+<p>Notice how the <code>input</code> property is automatically bound to the textfield just by referencing it in the <code>textfield</code> builder. As an alternative, you could have created a
+reference to the textfield and retrieved its <code>text</code> property, but that approach would create more complex UI code without much benefit. In rare cases you might
+need to reference individual UI elements.</p>
+<p><strong>Figure 3.7</strong></p>
+<p><img src="https://i.imgur.com/CKG7Fb9.png" alt="" /></p>
+<p>When we build the UI, we make sure to add a reference to the <code>inputField</code> so that it can be referenced from the <code>onClick</code>
+event handler of the &quot;Commit&quot; button later, hence why we save it to a variable. When the &quot;Commit&quot; button is clicked, you will see the Controller prints  a line to the console.</p>
+<pre><code>Writing Alpha to database!
+</code></pre>
+<p>It is important to note that while the above code works, and may even look pretty good, it is a good practice to avoid
+referencing other UI elements directly. Your code will be much easier to refactor if you bind your UI elements to
+properties and manipulate the properties instead. We will introduce the <code>ViewModel</code> later, which provides even easier
+ways to deal with this type of interaction.</p>
+<p>You can also use Controllers to provide data to a <code>View</code> (Figure 3.8).</p>
+<pre><code class="language-kotlin">import javafx.collections.FXCollections
+import tornadofx.*
+
+
+class MyView : View() {
+    val controller: MyController by inject()
+
+    override val root = vbox {
+        label(&quot;My items&quot;)
+        listview(controller.values)
+    }
+}
+
+class MyController: Controller() {
+    val values = FXCollections.observableArrayList(&quot;Alpha&quot;,&quot;Beta&quot;,&quot;Gamma&quot;,&quot;Delta&quot;)
+}
+</code></pre>
+<p><strong>Figure 3.8</strong></p>
+<p><img src="https://i.imgur.com/oKL9ZVD.png" alt="" /></p>
+<p>The <code>VBox</code> contains a <code>Label</code> and a <code>ListView</code>, and the <code>items</code> property of the <code>ListView</code> is assigned to the <code>values</code> property of our <code>Controller</code>.</p>
+<p>Whether they are reading or writing data, Controllers can have long-running tasks and should not perform work on the JavaFX thread. We will learn how to easily offload work to a worker thread using the <code>runAsync</code> construct next.</p>
+<h3 class="mdui-text-color-theme">Long Running Tasks</h3>
+<p>Whenever you call a function in a controller, you need to determine if that function returns immediately or if it
+performs potentially long-running tasks. If you call a function on the JavaFX Application Thread, the UI
+will be unresponsive until the call completes. Unresponsive UI's is a killer for user acceptance, so we need to make sure to run expensive operations in the background. TornadoFX provides the <code>runAsync</code> function to help with this.</p>
+<p>Code placed inside a <code>runAsync</code> block will run in the background. If the result of the background call should update your UI, you must make sure that you apply the changes on the JavaFX Application Thread. The <code>ui</code> block, which typically follows, does exactly that.</p>
+<pre><code class="language-kotlin">val textfield = textfield()
+button(&quot;Update text&quot;) {
+    action {
+        runAsync {
+            myController.loadText()
+        } ui { loadedText -&gt;
+            textfield.text = loadedText
+        }
+    }
+}
+</code></pre>
+<p>When the button is clicked, the action inside the <code>action</code> builder is run. It makes a call out to <code>myController.loadText()</code>and applies the result to the text property of the textfield when it returns. The UI stays responsive while the controller function runs.</p>
+<p>Under the covers, <code>runAsync</code> creates a JavaFX <code>Task</code> objects, and spins off a separate thread to run your call inside the <code>Task</code>. You can even assign this <code>Task</code> to a variable and bind it to a UI to show progress while your operation is running.</p>
+<p>In fact, this is so common that there is also a default ViewModel called <code>TaskStatus</code> which contains observable values
+for <code>running</code>, <code>message</code>, <code>title</code>, and <code>progress</code>. You can supply the <code>runAsync</code> call with a specific instance of the <code>TaskStatus</code> object, or use the default. There is also a version of <code>runAsync</code> called <code>runAsyncWithProgress</code> which will cover the current <code>Node</code> with a progress indicator while the long running operation runs.</p>
+<p>The TornadoFX sources includes an example usage of this in the <code>AsyncProgressApp.kt</code> file.</p>
+<blockquote>
+<p>If you need to handle a great deal of complex concurrency, you may consider using <a href="https://github.com/ReactiveX/RxKotlin" target="_blank">RxKotlin</a> with <a href="https://github.com/thomasnield/RxKotlinFX" target="_blank">RxKotlinFX</a>. Rx also has the ability to handle rapid user inputs and events, and kill previous requests to only chase after the latest.</p>
+</blockquote>
+<h2 class="mdui-text-color-theme">Fragment</h2>
+<p>Any <code>View</code> you create is a singleton, which means you typically use it in only one place at a time. The reason for this is that the root node of the <code>View</code> can only have a single parent in a JavaFX application. If you assign it another parent, it will disappear from its previous parent.</p>
+<p>However, if you would like to create a piece of UI that is short-lived or can be used in multiple places, consider using
+a <code>Fragment</code>. A <strong>Fragment</strong> is a special type of <code>View</code> designed to have multiple instances. They are particularly useful for popups or as pieces of a larger UI (such as ListCells, which we look at via the <code>ListCellFragment</code> later).</p>
+<p>Both <code>View</code> and <code>Fragment</code> support <code>openModal()</code>, <code>openWindow()</code>, and <code>openInternalWindow()</code> functions that will open the root node in a separate Window.</p>
+<pre><code class="language-kotlin">import javafx.stage.StageStyle
+import tornadofx.*
+
+
+class MyView : View() {
+    override val root = vbox {
+        button(&quot;Press Me&quot;) {
+            action {
+                find&lt;MyFragment&gt;().openModal(stageStyle = StageStyle.UTILITY)
+            }
+        }
+    }
+}
+
+class MyFragment: Fragment() {
+    override val root = label(&quot;This is a popup&quot;)
+}
+</code></pre>
+<p>You can also pass optional arguments to <code>openModal()</code> to modify a few of its behaviors</p>
+<p><strong>Optional Arguments for openModal()</strong></p>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stageStyle</td>
+<td>StageStyle</td>
+<td>Defines one of the possible enum styles for <code>Stage</code>. Default: <code>StageStyle.DECORATED</code></td>
+</tr>
+<tr>
+<td>modality</td>
+<td>Modality</td>
+<td>Defines one of the possible enum modality types for <code>Stage</code>. Default: <code>Modality.APPLICATION_MODAL</code></td>
+</tr>
+<tr>
+<td>escapeClosesWindow</td>
+<td>Boolean</td>
+<td>Sets the <code>ESC</code> key to call <code>close()</code>. Default: <code>true</code></td>
+</tr>
+<tr>
+<td>owner</td>
+<td>Window</td>
+<td>Specify the owner Window for this Stage</td>
+</tr>
+<tr>
+<td>block</td>
+<td>Boolean</td>
+<td>Block UI execution until the Window closes. Default: <code>false</code></td>
+</tr>
+</tbody>
+</table>
+<h2 class="mdui-text-color-theme">InternalWindow</h2>
+<p>While <code>openModal</code> opens in a new <code>Stage</code>, <code>openInternalWindow</code> opens over the current root node, or any other node if you specify it:</p>
+<pre><code class="language-kotlin">    button(&quot;Open editor&quot;) {
+        action {
+            openInternalWindow&lt;Editor&gt;()
+        }
+    }
+</code></pre>
+<p><strong>Figure 3.9</strong></p>
+<p><img src="https://i.imgur.com/7Z0X5QL.png" alt="" /></p>
+<p>A good use case for the internal window is for single stage environments like JPro, or if you want to customize the window trim to make the window appear more in line with the design of your application. The Internal Window can be styled with CSS. Take a look at the <code>InternalWindow.Styles</code> class for more information about styleable properties.</p>
+<p>The internal window API differs from modal/window in one important aspect. Since the window opens over an existing node, you typically call <code>openInternalWindow()</code> from within the <code>View</code> you want it to open on top of. You supply the View you want to show, and you can optionally supply what node to open over via the <code>owner</code> parameter.</p>
+<p><strong>Optional Arguments for openInternalWindow()</strong></p>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>view</td>
+<td>UIComponent</td>
+<td>The component will be the content of the new window</td>
+</tr>
+<tr>
+<td>view</td>
+<td>KClass&lt;UIComponent&gt;</td>
+<td>Alternatively, you can supply the class of the view instead of an instance</td>
+</tr>
+<tr>
+<td>icon</td>
+<td>Node</td>
+<td>Optional window icon</td>
+</tr>
+<tr>
+<td>scope</td>
+<td>Scope</td>
+<td>If you specify the view class, you can also specify the scope used to fetch the view</td>
+</tr>
+<tr>
+<td>modal</td>
+<td>Boolean</td>
+<td>Defines if the covering node should be disabled while the internal window is active. Default: <code>true</code></td>
+</tr>
+<tr>
+<td>escapeClosesWindow</td>
+<td>Boolean</td>
+<td>Sets the <code>ESC</code> key to call <code>close()</code>. Default: <code>true</code></td>
+</tr>
+<tr>
+<td>owner</td>
+<td>Node</td>
+<td>Specify the owner Node for this window. The window will by default cover the root node of this view.</td>
+</tr>
+<tr>
+<td>closeButton</td>
+<td>Boolean</td>
+<td>Whether there is the close button in window. Default: <code>true</code></td>
+</tr>
+<tr>
+<td>movable</td>
+<td>Boolean</td>
+<td>Whether the window is movable. Default: <code>true</code></td>
+</tr>
+<tr>
+<td>overlayPaint</td>
+<td>Paint</td>
+<td>The paint for overlay part of internal window over window. Default: <code>c(&quot;#000&quot;, 0.4)</code></td>
+</tr>
+</tbody>
+</table>
+<h2 class="mdui-text-color-theme">Closing Modal Windows</h2>
+<p>Any <code>Component</code> opened using <code>openModal()</code>, <code>openWindow()</code> or <code>openInternalWindow()</code> can be closed by calling <code>close()</code>. It is also possible to get to the <code>InternalWindow</code> instance directly if needed using <code>findParentOfType(InternalWindow::class)</code>.</p>
+<h2 class="mdui-text-color-theme">Replacing Views and Docking Events</h2>
+<p>With TornadoFX, is easy to swap your current <code>View</code> with another <code>View</code> using <code>replaceWith()</code>, and optionally add a transition. In the example below, a <code>Button</code> on each <code>View</code> will switch to the other view, which can be <code>MyView1</code> or <code>MyView2</code> (Figure 3.10).</p>
+<pre><code class="language-kotlin">import tornadofx.*
+
+
+class MyView1: View() {
+    override val root = vbox {
+        button(&quot;Go to MyView2&quot;) {
+            action {
+                replaceWith&lt;MyView2&gt;()
+            }
+        }
+    }
+}
+
+class MyView2: View() {
+    override val root = vbox {
+        button(&quot;Go to MyView1&quot;) {
+            action {
+                replaceWith&lt;MyView1&gt;()
+            }
+        }
+    }
+}
+</code></pre>
+<p><strong>Figure 3.10</strong></p>
+<p><img src="https://i.imgur.com/IkInGZh.png" alt="" /></p>
+<p>You also have the option to specify a spiffy animation for the transition between the two Views, as shown below.</p>
+<pre><code class="language-kotlin">replaceWith(MyView1::class, ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
+</code></pre>
+<p>This works by replacing the <code>root</code> <code>Node</code> on a given <code>View</code> with another <code>View</code>'s <code>root</code>. There are two functions you can override on <code>View</code> to leverage when a View's <code>root</code> <code>Node</code> is connected to a parent (<code>onDock()</code>), and when it is disconnected (<code>onUndock()</code>). You can leverage these two events to connect and &quot;clean up&quot; whenever a <code>View</code> comes in or falls out. You will notice running the code below that whenever a <code>View</code> is swapped, it will undock that previous <code>View</code> and dock the new one. You can leverage these two events to manage initialization and disposal tasks.</p>
+<pre><code class="language-kotlin">import tornadofx.*
+
+
+class MyView1: View() {
+    override val root = vbox {
+        button(&quot;Go to MyView2&quot;) {
+            action {
+                replaceWith&lt;MyView2&gt;()
+            }
+        }
+    }
+
+    override fun onDock() {
+        println(&quot;Docking MyView1!&quot;)
+    }
+
+    override fun onUndock() {
+        println(&quot;Undocking MyView1!&quot;)
+    }
+}
+
+class MyView2: View() {
+    override val root = vbox {
+        button(&quot;Go to MyView1&quot;) {
+            action {
+                replaceWith&lt;MyView1&gt;()
+            }
+        }
+    }
+
+    override fun onDock() {
+        println(&quot;Docking MyView2!&quot;)
+    }
+    override fun onUndock() {
+        println(&quot;Undocking MyView2!&quot;)
+    }
+}
+</code></pre>
+<h2 class="mdui-text-color-theme">Passing Parameters to Views</h2>
+<p>The best way to pass information between views is often an injected <code>ViewModel</code>. Even so, it can still be convenient to be able to pass parameters to other components. The <code>find</code> and <code>inject</code> functions supports varargs of <code>Pair&lt;String, Any&gt;</code> which can be used for just this purpose. Consider a customer list that opens a customer editor for the selected customer. The action to edit a customer might look like this:</p>
+<pre><code class="language-kotlin">fun editCustomer(customer: Customer) {
+    find&lt;CustomerEditor&gt;(mapOf(CustomerEditor::customer to customer)).openWindow()
+}
+</code></pre>
+<p>The parameters are passed as a map, where the key is the property in the view and the value is whatever you want the property to be. This gives you a type safe way of configuring parameters for the target View.</p>
+<p>Here we use the Kotlin <code>to</code> syntax to create the parameter. This could also have been written as <code>Pair(CustomerEditor::customer, customer)</code> if you prefer. The editor can now access the parameter like this:</p>
+<pre><code class="language-kotlin">class CustomerEditor : Fragment() {
+    val customer: Customer by param()
+}
+</code></pre>
+<p>If you want to inspect the parameters instead of blindly relying on them to be available, you can either declare them as nullable or consult the <code>params</code> map:</p>
+<pre><code class="language-kotlin">class CustomerEditor : Fragment() {
+    init {
+        val customer = params[&quot;customer&quot;] as? Customer
+        if (customer != null) {
+            ...
+        }
+    }
+}
+</code></pre>
+<p>If you do not care about type safety you can also pass parameters as <code>mapOf(&quot;customer&quot; to customer)</code>, but then you miss out on automatic refactoring if you rename a property in the target view.</p>
+<h2 class="mdui-text-color-theme">Accessing the Primary Stage</h2>
+<p><code>View</code> has a property called <code>primaryStage</code> that allows you to manipulate properties of the <code>Stage</code> backing it, such as window size. Any <code>View</code> or <code>Fragment</code> that were opened via <code>openModal</code> will also have a <code>modalStage</code> property available.</p>
+<h2 class="mdui-text-color-theme">Accessing the Scene</h2>
+<p>Sometimes it is necessary to get a hold of the current scene from within a <code>View</code> or <code>Fragment</code>. This can be achieved with <code>root.scene</code>, or if you are within a type safe builder, just call <code>scene</code>.</p>
+<h2 class="mdui-text-color-theme">Accessing Resources</h2>
+<p>Lots of JavaFX APIs takes resources as a <code>URL</code> or the <code>toExternalForm</code> of an URL. To retrieve a resource url one would typically write something like:</p>
+<pre><code class="language-kotlin">val myAudioClip = AudioClip(MyView::class.java.getResource(&quot;mysound.wav&quot;).toExternalForm())
+</code></pre>
+<p>However, every <code>Component</code> has a <code>resources</code> object which can retrieve the external form url of a resource like this:</p>
+<pre><code class="language-kotlin">val myAudiClip = AudioClip(resources[&quot;mysound.wav&quot;])
+</code></pre>
+<p>If you need an actual <code>URL</code>, it can be retrieved like this:</p>
+<pre><code class="language-kotlin">val myResourceURL = resources.url(&quot;mysound.wav&quot;)
+</code></pre>
+<p>The <code>resources</code> helper also has several other helpful functions to help you turn files relative to the <code>Component</code> into an object of the type you need:</p>
+<pre><code class="language-kotlin">val myJsonObject = resources.json(&quot;myobject.json&quot;)
+val myJsonArray = resources.jsonArray(&quot;myarray.json&quot;)
+val myStream = resources.stream(&quot;somefile&quot;)
+</code></pre>
+<blockquote>
+<p>It is worth mentioning that the <code>json</code> and <code>jsonArray</code> functions are also available on <code>InputStream</code> objects.</p>
+</blockquote>
+<p>Resources are relative to the <code>Component</code> but you can also retrieve a resource by it's full path, starting with a <code>/</code>.</p>
+<h2 class="mdui-text-color-theme">Summary</h2>
+<p>TornadoFX is filled with simple, streamlined, and powerful injection tools to manage Views and Controllers. It also streamlines dialogs and other small UI pieces using <code>Fragment</code>. While the applications we built so far are pretty simple, hopefully you appreciate the simplified concepts TornadoFX introduces to JavaFX. In the next chapter we will cover what is arguably the most powerful feature of TornadoFX: Type-Safe Builders.</p>
+
+</body>
+</html>

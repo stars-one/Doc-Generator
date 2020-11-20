@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+    <meta content="text/html; charset=utf-8">
+    <script src="../js/vue.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/mdui.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="../css/mdui.css">
+    <link rel="stylesheet" href="../css/dracula.css">
+    <script src="../js/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+    <style>
+        .mdui-typo pre {
+            display: block;
+            overflow-x: auto;
+            padding: 0.5em;
+            background: #282a36;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="mdui-typo mdui-container mdui-theme-primary-blue">
+    <h1 class="mdui-text-color-theme">介绍</h1>
+<p>用户界面对于消费者和业务应用程序的成功变得越来越重要。随着移动应用程序和Web应用程序的兴起，用户们越来越多地要求企业应用程序具有更高的质量标准。 他们需要功能丰富的用户界面，以便可以直观地浏览。 更重要的是，他们希望应用程序能够频繁地快速适应业务变化。 对于开发人员来说，这意味着该应用程序不仅必须是可维护的，而且还必须是可迭代的。 TornadoFX寻求协助所有这些目标，并极大地简化JavaFX UI的开发。</p>
+<p>尽管许多企业IT界正在推动HTML5和基于云的应用程序，但许多企业仍在使用JavaFX等桌面UI框架。 尽管JavaFX不能像Web应用程序那样容易地直接使用（JavaFx需要配置JRE环境），但JavaFX可以很好地用于“内部”业务应用程序。 它具有大型数据集的高性能（并且它是本机Java），使其成为企业防火墙后面使用的应用程序的实用选择。</p>
+<p>像许多UI框架一样，JavaFX可能很快变得冗长且难以维护。 幸运的是，快速增长的Kotlin平台为JavaFX应用程序的重构提供了机会。</p>
+<h1 class="mdui-text-color-theme">为什么需要TornadoFX</h1>
+<p>2016年2月，JetBrains发布了<a href="http://kotlinlang.org" target="_blank">Kotlin</a>，这是一种新的JVM语言，强调实用主义而不是传统。Kotlin在更高的抽象级别上工作，并提供Java中不可用的实用语言特性。Kotlin更重要的特性之一是它与现有Java库和代码库(包括JavaFX)的100%互操作性。更重要的是，在2017年，谷歌支持Kotlin作为Android的官方语言。这给了Kotlin一个光明的未来，它已经超越了移动应用程序。</p>
+<p>虽然JavaFX可以用与Java相同的方式与Kotlin一起使用，但是一些人认为Kotlin拥有可以简化JavaFX开发的语言特性。在Kotlin测试之前，Eugen Kiss创建了JavaFX“构建者”的原型KotlinFX。2016年1月，Edvin Syse重启了此项目并发布了TornadoFx。</p>
+<p>Tornadofx寻求将构建JavaFX应用程序所需的代码量极大地最小化。它不仅包括用于快速布局控件（Control）和用户界面的类型安全构建器（Cs，还包括特性依赖注入、委托属性、控制扩展函数和Kotlin支持的其他实用特性。Tornadofx很好地展示了Kotlin如何简化代码库，并且优雅而简单地处理了冗长的UI代码。它可以与其他流行的JavaFX库一起工作，比如<a href="http://fxexperience.com/controlsfx/" target="_blank">ControlsFX</a>和<a href="http://jfxtras.org/" target="_blank">JFXtras</a>。效果非常好<a href="https://github.com/TomasMikula/ReactFX" target="_blank">ReactFX</a>以及 <a href="https://github.com/ReactiveX/RxJava" target="_blank">RxJava</a>和<a href="https://github.com/ReactiveX/RxJavaFX" target="_blank">RxJavaFX</a>, <a href="https://github.com/ReactiveX/RxKotlin" target="_blank">RxKotlin</a>和<a href="https://github.com/thomasnield/RxKotlinFX" target="_blank">RxKotlinFX</a></p>
+<h1 class="mdui-text-color-theme">入门须知</h1>
+<p>这本书希望读者对Kotlin有一些了解，并花一些时间来熟悉它。将会有一些Kotlin语言的特性，但只是在一定程度上。如果您还没有这样做，请阅读<a href="https://kotlinlang.org/docs/reference/" target="_blank">JetBrains Kotlin Reference</a>并花几个小时研究它。</p>
+<p>熟悉JavaFX会有帮助，但不是必需的。许多Kotlin开发人员报告说在没有任何JavaFX知识的情况下成功使用了TornadoFx。你需要了解JavaFX中的观察者数值(ObservableValue)和绑定(Binding)这两个概念,本指南将会很好地介绍这些概念。</p>
+<h1 class="mdui-text-color-theme">一个有趣例子</h1>
+<p>如果你以前使用过JavaFX，你可能创建过一个TableView(用于显示表格)。假设您有一个给定的Person对象。TornadoFx允许你更简洁地创建用于JavaFX绑定，类似javabean的约定。</p>
+<pre><code class="language-kotlin">class Person(id: Int, name: String, birthday: LocalDate) {
+    val idProperty = SimpleIntegerProperty(id)
+    var id by idProperty
+
+    val nameProperty = SimpleStringProperty(name)
+    var name by nameProperty
+
+    val birthdayProperty = SimpleObjectProperty(birthday)
+    var birthday by birthdayProperty
+
+    val age: Int get() = Period.between(birthday, LocalDate.now()).years
+}
+</code></pre>
+<p>只需要使用一小段代码，你之后就可以在View中创建一个TableView</p>
+<pre><code class="language-kotlin">class MyView : View() {
+
+    private val persons = listOf(
+            Person(1, &quot;Samantha Stuart&quot;, LocalDate.of(1981,12,4)),
+            Person(2, &quot;Tom Marks&quot;, LocalDate.of(2001,1,23)),
+            Person(3, &quot;Stuart Gills&quot;, LocalDate.of(1989,5,23)),
+            Person(4, &quot;Nicole Williams&quot;, LocalDate.of(1998,8,11))
+    ).observable()
+
+    override val root = tableview(persons) {
+        column(&quot;ID&quot;, Person::idProperty)
+        column(&quot;Name&quot;, Person::nameProperty)
+        column(&quot;Birthday&quot;, Person::birthdayProperty)
+        readonlyColumn(&quot;Age&quot;, Person::age)
+    }
+}
+</code></pre>
+<p><strong>界面效果:</strong></p>
+<p><img src="https://camo.githubusercontent.com/21d91e000f36556b67bea322ff1152199aee483e/68747470733a2f2f692e696d6775722e636f6d2f41474d435038532e706e67" alt="" /></p>
+<p>上述代码的一半是用来初始化示例数据！ 如果只研究TableView部分（如下所示），您将看到它采用了简单的功能构造来构建TableView。 它还将自动支持对字段的编辑。</p>
+<pre><code class="language-kotlin">tableview(persons) {
+    column(&quot;ID&quot;, Person::idProperty)
+    column(&quot;Name&quot;, Person::nameProperty)
+    column(&quot;Birthday&quot;, Person::birthdayProperty)
+    readonlyColumn(&quot;Age&quot;, Person::age)
+}
+</code></pre>
+<p>如下所示，我们可以在TableColumn上使用cellFormat()方法进行功能的扩展</p>
+<p>当列表中的某个对象的年龄字段是小于18,它的样式会发生改变,代码如下面所示:</p>
+<pre><code class="language-kotlin">tableview&lt;Person&gt; {
+    items = persons
+    column(&quot;ID&quot;, Person::idProperty)
+    column(&quot;Name&quot;, Person::nameProperty)
+    column(&quot;Birthday&quot;, Person::birthdayProperty)
+    readonlyColumn(&quot;Age&quot;, Person::age).cellFormat {
+        text = it.toString()
+        style {
+            if (it &lt; 18) {
+                backgroundColor += c(&quot;#8b0000&quot;)
+                textFill = Color.WHITE
+            }
+        }
+    }
+}
+</code></pre>
+<p><strong>界面效果:</strong></p>
+<p><img src="https://camo.githubusercontent.com/dbc9a172be484e4ab8eeb0accc3799500e9fe791/68747470733a2f2f692e696d6775722e636f6d2f4d7932475545762e706e67" alt="" /></p>
+<p>这些声明是纯Kotlin代码，TornadoFX在许多情况下都具有表达能力。 这使您可以专注于创建解决方案，而不是设计UI代码。 您的JavaFX应用程序不仅可以更快地周转，而且可以维护和发展。</p>
+
+</body>
+</html>

@@ -2,6 +2,7 @@
 ### Kotlin template
 # Compiled class file
 out/doc/
+
 .idea/
 target/
 Test.kt

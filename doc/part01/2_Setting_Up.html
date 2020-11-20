@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+    <meta content="text/html; charset=utf-8">
+    <script src="../js/vue.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/mdui.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="../css/mdui.css">
+    <link rel="stylesheet" href="../css/dracula.css">
+    <script src="../js/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+    <style>
+        .mdui-typo pre {
+            display: block;
+            overflow-x: auto;
+            padding: 0.5em;
+            background: #282a36;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="mdui-typo mdui-container mdui-theme-primary-blue">
+    <h1 class="mdui-text-color-theme">Setting Up</h1>
+<p>To use TornadoFX, there are several options to set up the dependency for your project. Mainstream build automation tools like <a href="http://gradle.org/" target="_blank">Gradle</a> and <a href="https://maven.apache.org/" target="_blank">Maven</a> are supported and should have no issues in getting set up.</p>
+<p>Please note that TornadoFX is a Kotlin library, and therefore your project needs to be configured to use Kotlin. For Gradle and Maven configurations, please refer to the <a href="https://kotlinlang.org/docs/reference/using-gradle.html" target="_blank">Kotlin Gradle Setup</a> and <a href="https://kotlinlang.org/docs/reference/using-maven.html" target="_blank">Kotlin Maven Setup</a> guides. Make sure your development environment or IDE is equipped to work with Kotlin and has the proper plugins and compilers.</p>
+<p>This guide will use Intellij IDEA to walk through certain examples. IDEA is the IDE of choice to work with Kotlin, although Eclipse has a plugin as well.</p>
+<h2 class="mdui-text-color-theme">If you are using Oracle JDK</h2>
+<h3 class="mdui-text-color-theme">Gradle</h3>
+<p>For Gradle, you can set up the dependency directly from Maven Central. Provide the desired version number for the  <code>x.y.z</code> placeholder.</p>
+<pre><code>repositories {
+    mavenCentral()
+}
+
+// Minimum jvmTarget of 1.8 needed since Kotlin 1.1
+compileKotlin {
+    kotlinOptions.jvmTarget= 1.8
+}
+
+dependencies {
+    implementation 'no.tornado:tornadofx:x.y.z'
+}
+</code></pre>
+<h3 class="mdui-text-color-theme">Maven</h3>
+<p>To import TornadoFX with Maven, add the following dependency to your POM file. Provide the desired version number for the  <code>x.y.z</code> placeholder.</p>
+<p>Goes into kotlin-maven-plugin block:</p>
+<pre><code>&lt;configuration&gt;
+    &lt;jvmTarget&gt;1.8&lt;/jvmTarget&gt;
+&lt;/configuration&gt;
+</code></pre>
+<p>Then this goes into <code>dependencies</code> block:</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;no.tornado&lt;/groupId&gt;
+    &lt;artifactId&gt;tornadofx&lt;/artifactId&gt;
+    &lt;version&gt;x.y.z&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h2 class="mdui-text-color-theme">If you are using OpenJDK</h2>
+<p>On Ubuntu 19.10, there is no longer any clean way to run OpenJDK 8 with JFX. OpenJDK in general does not include the JFX module libraries -- JFX support for OpenJDK is commonly provided by OpenJFX, which has a maven distribution as well as packages in various Linux distributions. However, the OpenJFX versions are tied to JDK versions (e.g. OpenJFX 8 is compatible with OpenJDK 8), and unfortunately the OpenJFX 8 version is not available in Ubuntu 19.10's packages, nor does it compile from source using the packaged OpenJDK 8.</p>
+<p>The upshot of this is that if you wish to continue using OpenJDK (on Ubuntu), your options are:</p>
+<ol>
+<li>
+<p>Stay on OpenJDK 8 but install OpenJFX 8 system wide by adding older dependencies to your system (e.g. https://bugs.launchpad.net/ubuntu/+source/openjfx/+bug/1799946/comments/7)</p>
+</li>
+<li>
+<p>Alternately, you can bite the bullet and upgrade to OpenJDK 11, and install OpenJFX via Maven/Gradle. This solution is as follows:</p>
+</li>
+</ol>
+<h3 class="mdui-text-color-theme">Gradle</h3>
+<p>a) Upgrade to OpenJDK 11 via your system's packaging tools.</p>
+<p>b) Add the OpenJFX gradle plugin:</p>
+<pre><code>plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
+</code></pre>
+<p>c) Add gradle dependencies:</p>
+<pre><code>javafx {
+    version = &quot;11.0.2&quot;
+    modules = ['javafx.controls', 'javafx.graphics']
+}
+
+dependencies {
+    implementation 'no.tornado:tornadofx:x.y.z'
+}
+</code></pre>
+<p>d) Change kotlin <code>jvmTarget</code> to <code>11</code>:</p>
+<pre><code>compileKotlin {
+    kotlinOptions.jvmTarget = &quot;11&quot;
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = &quot;11&quot;
+}
+</code></pre>
+<p>e) The gradle doesn't support <code>JPMS</code> correctly, so we don't need to add <code>module-info.java</code> for project.</p>
+<p>In Intellij Idea, you should change the <code>Project SDK</code> to <code>11</code> in <code>File -&gt; Project Structure -&gt; Project Settings -&gt; Project</code>.</p>
+<h3 class="mdui-text-color-theme">Maven</h3>
+<p>a) Upgrade to OpenJDK 11 via your system's packaging tools.</p>
+<p>b) Add maven dependencies:</p>
+<pre><code>        &lt;dependency&gt;
+            &lt;groupId&gt;no.tornado&lt;/groupId&gt;
+            &lt;artifactId&gt;tornadofx&lt;/artifactId&gt;
+    	    &lt;version&gt;x.y.z&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx&lt;/artifactId&gt;
+            &lt;version&gt;11.0.2&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx-base&lt;/artifactId&gt;
+            &lt;version&gt;11.0.2&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
+            &lt;version&gt;11.0.2&lt;/version&gt;
+        &lt;/dependency&gt;
+</code></pre>
+<p>c) Add the OpenJFX builder to your build/plugins section:</p>
+<pre><code>&lt;build&gt;
+   &lt;plugins&gt;
+       ...
+	&lt;plugin&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;0.0.3&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;mainClass&gt;MyMainApp&lt;/mainClass&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+   &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
+<p>d) Set the language level in your maven build to 11:</p>
+<pre><code>&lt;build&gt;
+   &lt;plugins&gt;
+	...
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.8.0&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;release&gt;11&lt;/release&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/plugin&gt;
+</code></pre>
+<p>e) Finally, add src/main/kotlin/module-info.java, to set up permissioning in Java 11's module system.</p>
+<pre><code>module yourmodulename {
+    requires javafx.controls;
+    requires javafx.graphics;
+    requires tornadofx;
+    requires kotlin.stdlib;
+    opens your.package.to.ui.classes;
+}
+</code></pre>
+<p>If you are using IntelliJ, it will provide helpful prompts to add any additional modules that you may need for the build to succeed with your app. StackOverflow has a plethora of questions from Java programmers switching to the module system for the first time, so if you run into a module permissions related issue, google the error message for a solution.</p>
+<p>(Variations on this section for other platforms are welcomed.)</p>
+<h2 class="mdui-text-color-theme">Other Build Automation Solutions</h2>
+<p>For instructions on how to use TornadoFX with other build automation solutions, please refer to the <a href="https://search.maven.org/artifact/no.tornado/tornadofx/" target="_blank">TornadoFX page at the Central Repository</a></p>
+<h2 class="mdui-text-color-theme">Manual Import</h2>
+<p>To manually download and import the JAR file, go to the <a href="https://github.com/edvin/tornadofx/releases" target="_blank">TornadoFX release page</a> or the <a href="https://search.maven.org" target="_blank">Central Repository</a>. Download the JAR file and configure it into your project.</p>
+
+</body>
+</html>
